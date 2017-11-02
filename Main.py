@@ -63,7 +63,7 @@ def clientthread(connection, address):
                 conn.sendall(client_name + " has joined the chat\n\n")
 
         elif data[:len("LEAVE_CHATROOM")] == "LEAVE_CHATROOM":
-            params = data.split('\\n')
+            params = data.split('\n')
             room_ref = " ".join(params[0].split(" ")[1:]).strip('[]')
             join_id = " ".join(params[1].split(" ")[1:]).strip('[]')
             client_name = " ".join(params[2].split(" ")[1:]).strip('[]\n')
@@ -79,7 +79,7 @@ def clientthread(connection, address):
             connection.sendall(reply)
         
         elif data[:len("CHAT:")] == "CHAT:":
-            params = data.split('\\n')
+            params = data.split('\n')
             room_ref = " ".join(params[0].split(" ")[1:]).strip('[]')
             chat = ref_name_dict[room_ref]
             join_id = " ".join(params[1].split(" ")[1:]).strip('[]')
