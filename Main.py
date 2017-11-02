@@ -23,9 +23,8 @@ def clientthread(connection, address):
     #infinite loop so that function do not terminate and thread do not end.
     while True:
         #Receiving from client
-        print connection
+        print connection._closed
         print "hello I am alive"
-        print connection.recv(8192)
         data = connection.recv(8192)
         print "data: "+data
         if not data:
