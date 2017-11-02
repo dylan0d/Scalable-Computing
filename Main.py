@@ -16,10 +16,8 @@ all_chatrooms = {}
 
 def clientthread(connection, address):
     #Sending message to connected client
-    connection.send('Welcome to the server. Type something and hit enter\n') #send only takes string
     #infinite loop so that function do not terminate and thread do not end.
     while True:
-
         #Receiving from client
         data = connection.recv(1024)
         if not data:
@@ -32,6 +30,7 @@ def clientthread(connection, address):
             for chat in all_chatrooms:
                 for client_conn in chat["connections"]:
                     client_conn.close()
+            connection.close()
             print "Shutting Down"
             os._exit(1)
             break
@@ -58,7 +57,7 @@ def clientthread(connection, address):
             else:
                 if connection not in all_chatrooms[chat_name]["connections"]:
                     all_chatrooms[chat_name]["connections"].append(connection)
-            reply = "JOINED_CHATROOM: ["+chat_name+"]\nSERVER_IP: ["+str(all_chatrooms[chat_name]["IP"])+"]\nPORT: ["+str(all_chatrooms[chat_name]["Port"])+"]\nROOM_REF: ["+str(name_ref_dict[chat_name])+"]\nJOIN_ID: ["+str(client_ref_dict[str(address[0])+str(address[1])])+"]\n\n"
+            reply = "JOINED_CHATROOM: "+chat_name+"\nSERVER_IP: "+str(all_chatrooms[chat_name]["IP"])+"\nPORT: "+str(all_chatrooms[chat_name]["Port"])+"\nROOM_REF: "+str(name_ref_dict[chat_name])+"\nJOIN_ID: "+str(client_ref_dict[str(address[0])+str(address[1])])+"\n\n"
             connection.sendall(reply)
             for conn in all_chatrooms[chat_name]["connections"]:
                 conn.sendall(client_name + " has joined the chat\n\n")
@@ -76,7 +75,7 @@ def clientthread(connection, address):
             except Exception:
                 print "Already left"
 
-            reply = "LEFT_CHATROOM: ["+room_ref+"]\nJOIN_ID: ["+join_id+"]\n\n"
+            reply = "LEFT_CHATROOM: "+room_ref+"\nJOIN_ID: "+join_id+"\n\n"
             connection.sendall(reply)
         
         elif data[:len("CHAT:")] == "CHAT:":
@@ -87,7 +86,7 @@ def clientthread(connection, address):
             client_name = " ".join(params[2].split(" ")[1:]).strip('[]')
             message = " ".join(params[3].split(" ")[1:]).strip('[]\n')
 
-            reply = "CHAT: ["+room_ref+"]\nCLIENT_NAME: ["+client_name+"]\nMESSAGE: ["+message+"]\n\n"
+            reply = "CHAT: "+room_ref+"\nCLIENT_NAME: "+client_name+"\nMESSAGE: "+message+"\n\n"
             for conn in all_chatrooms[chat]["connections"]:
                 if not conn is connection:
                     conn.sendall(reply)
@@ -97,7 +96,6 @@ def clientthread(connection, address):
 
 if __name__ == "__main__":
     print 'Socket created successfully'
-    all_chatrooms["1"] = []
     #Bind socket to local host and port
     try:
         master_socket.bind((HOST, PORT))
