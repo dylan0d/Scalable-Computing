@@ -131,8 +131,8 @@ def clientthread(connection, address):
             client_name = getData(params, 2)
             print all_chatrooms.keys()
             print all_chatrooms.keys().reverse()
-            print list(all_chatrooms.keys()).reverse()
-            chats = list(all_chatrooms.keys()).reverse()
+            print list(all_chatrooms.keys())[::-1]
+            chats = list(all_chatrooms.keys())[::-1]
             for chat in chats:
                 print "checking ", chat
                 if connection in all_chatrooms[chat]["connections"]:
