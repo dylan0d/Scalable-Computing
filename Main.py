@@ -129,7 +129,8 @@ def clientthread(connection, address):
             connected = False
             params = data.split('\n')
             client_name = getData(params, 2)
-            for chat in all_chatrooms:
+            chats = all_chatrooms.keys().reverse()
+            for chat in chats:
                 print "checking ", chat
                 if connection in all_chatrooms[chat]["connections"]:
                     print "removing from "+ chat
@@ -138,7 +139,7 @@ def clientthread(connection, address):
                     reply = "CHAT:"+name_ref_dict[chat]+"\nCLIENT_NAME:"+client_name+"\nMESSAGE:"+client_name+" has left this chatroom.\n\n"
                     print reply
                     print 
-                    for conn in all_chatrooms[chat]["connections"][::-1]:
+                    for conn in all_chatrooms[chat]["connections"]:
                         conn.sendall(reply)
                     all_chatrooms[chat]["connections"].remove(connection)
             connection.close()
