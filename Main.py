@@ -35,8 +35,7 @@ def clientthread(connection, address):
             os._exit(1)
             break
         elif data[:len("JOIN_CHATROOM")] == "JOIN_CHATROOM":
-            params = data.split('\\n')
-            print params
+            params = data.split('\n')
             chat_name = " ".join(params[0].split(" ")[1:]).strip('[]')
             ip = " ".join(params[1].split(" ")[1:]).strip('[]')
             port = " ".join(params[2].split(" ")[1:]).strip('[]')
