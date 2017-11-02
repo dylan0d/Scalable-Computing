@@ -25,7 +25,7 @@ def clientthread(connection, address):
         #Receiving from client
         print connection
         print "hello I am alive"
-        data = connection.recv(4096)
+        data = connection.recv(8192)
         print "data: "+data
         if not data:
             break
