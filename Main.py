@@ -48,8 +48,9 @@ def clientthread(connection, address):
             reply = str(data) + "IP:" + str(address[0]) + ":" + str(address[1]) + "\nPort:" + str(PORT) + "\nStudentID:13320989"
             connection.sendall(reply)
 
-        elif data == "KILL_SERVICE\n":
-            if len(all_chatrooms)>0:
+        elif data[:len("KILL_SERVICE")] == "KILL_SERVICE":
+            print "recognised kill service"
+            if len(all_chatrooms) > 0:
                 for chat in all_chatrooms:
                     for client_conn in chat["connections"]:
                         client_conn.close()
