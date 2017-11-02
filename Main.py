@@ -124,6 +124,8 @@ def clientthread(connection, address):
         
         elif data[:len("DISCONNECT")] == "DISCONNECT":
             print "recognised disconnect"
+            print name_ref_dict
+            print ref_name_dict
             connected = False
             params = data.split('\n')
             client_name = getData(params, 2)
