@@ -28,7 +28,7 @@ def clientthread(connection, address):
        # print all_chatrooms
         print "hello I am alive"
         data = connection.recv(8192)
-        print data
+        print "Recevied: " + data
         if not data:
             break
         elif data[:4] == "HELO":
@@ -83,6 +83,7 @@ def clientthread(connection, address):
             join_id = getData(params, 1)
             client_name = getData(params, 2)
             chat = ref_name_dict[room_ref]
+            print params
       #      print chat
             try:
                 print "connection removed"
