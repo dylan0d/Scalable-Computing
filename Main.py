@@ -138,7 +138,7 @@ def clientthread(connection, address):
                     reply = "CHAT:"+name_ref_dict[chat]+"\nCLIENT_NAME:"+client_name+"\nMESSAGE:"+client_name+" has left this chatroom.\n\n"
                     print reply
                     print 
-                    for conn in all_chatrooms[chat]["connections"]:
+                    for conn in all_chatrooms[chat]["connections"][::-1]:
                         conn.sendall(reply)
                     all_chatrooms[chat]["connections"].remove(connection)
             connection.close()
