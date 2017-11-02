@@ -20,7 +20,7 @@ def clientthread(connection, address):
     while True:
         #Receiving from client
         data = connection.recv(1024)
-        print data
+        print "data: "+data
         if not data:
             break
         elif data[:4] == "HELO":
@@ -102,7 +102,7 @@ def clientthread(connection, address):
             for conn in all_chatrooms[chat]["connections"]:
                 if not conn is connection:
                     conn.sendall(reply)
-
+        print "starting while again"
     #came out of loop
     connection.close()
 
