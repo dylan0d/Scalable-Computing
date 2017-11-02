@@ -15,6 +15,19 @@ ref_name_dict = {}
 client_ref_dict = {}
 all_chatrooms = {}
 
+client_code = 0
+chat_code = 0
+
+def next_client_code():
+    global client_code
+    client_code += 1
+    return client_code
+
+def next_chat_code():
+    global chat_code
+    chat_code += 1
+    return chat_code
+
 def getData(params, index):
     return " ".join(params[index].split(" ")[1:]).strip('\n')
 
@@ -25,7 +38,7 @@ def clientthread(connection, address):
     connected = True
     while connected:
         #Receiving from client
-        print all_chatrooms
+
         print "hello I am alive"
         data = connection.recv(8192)
         print "Recevied: " + data
@@ -51,13 +64,9 @@ def clientthread(connection, address):
             port =getData(params, 2)
             client_name = getData(params, 3)
             if chat_name not in name_ref_dict:
-                picked_ref = False
-                while not picked_ref:
-                    ref_number = randint(0, 128)
-                    if ref_number not in name_ref_dict.itervalues():
-                        picked_ref = True
-                        name_ref_dict[chat_name] = str(ref_number)
-                        ref_name_dict[str(ref_number)] = chat_name
+                ref_number = next_chat_code
+                name_ref_dict[chat_name] = str(ref_number)
+                ref_name_dict[str(ref_number)] = chat_name
                 all_chatrooms[chat_name] = {
                     "connections":[connection],
                     "IP":"127.0.0.1",
@@ -141,11 +150,7 @@ if __name__ == "__main__":
         #wait to accept a connection - blocking call
         conn, addr = master_socket.accept()
         print 'Connected with ' + addr[0] + ':' + str(addr[1])
-        picked_ref = False
-        while not picked_ref:
-            ref_number = randint(0, 1024)
-            if ref_number not in name_ref_dict.itervalues():
-                picked_ref = True
-                client_ref_dict[str(addr[0])+str(addr[1])] = ref_number
+        cl_ref_number = next_client_code()
+        client_ref_dict[str(addr[0])+str(addr[1])] = cl_ref_number
         pool.submit(clientthread, conn, addr)
     master_socket.close()
