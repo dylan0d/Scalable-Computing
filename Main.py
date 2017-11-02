@@ -67,11 +67,13 @@ def clientthread(connection, address):
                 conn.sendall(reply)
 
         elif data[:len("LEAVE_CHATROOM")] == "LEAVE_CHATROOM":
+            print "recognised leave"
             params = data.split('\n')
             room_ref = " ".join(params[0].split(" ")[1:]).strip('[]')
             join_id = " ".join(params[1].split(" ")[1:]).strip('[]')
             client_name = " ".join(params[2].split(" ")[1:]).strip('[]\n')
             chat = ref_name_dict[room_ref]
+            print chat
             try:
                 all_chatrooms[chat]["connections"].remove(connection)
                 print "connection removed"
