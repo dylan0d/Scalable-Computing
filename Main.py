@@ -83,14 +83,13 @@ def clientthread(connection, address):
             join_id = getData(params, 1)
             client_name = getData(params, 2)
             chat = ref_name_dict[room_ref]
-            print params
       #      print chat
             try:
                 print "connection removed"
                 reply = "LEFT_CHATROOM: "+room_ref+"\nJOIN_ID: "+join_id+"\n"
                 connection.sendall(reply)
                 for conn in all_chatrooms[chat]["connections"]:
-                    reply = "CHAT:"+name_ref_dict[chat_name]+"\nCLIENT_NAME:"+client_name+"\nMESSAGE:"+client_name+" has left this chatroom.\n\n"
+                    reply = "CHAT:"+room_ref+"\nCLIENT_NAME:"+client_name+"\nMESSAGE:"+client_name+" has left this chatroom.\n\n"
                     print reply
                     conn.sendall(reply)
                     print "sent reply"
