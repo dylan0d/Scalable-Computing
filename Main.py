@@ -20,6 +20,7 @@ def clientthread(connection, address):
     while True:
         #Receiving from client
         data = connection.recv(1024)
+        print data
         if not data:
             break
         elif data[:4] == "HELO":
