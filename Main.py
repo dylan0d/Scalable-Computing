@@ -28,7 +28,7 @@ def clientthread(connection, address):
        # print all_chatrooms
         print "hello I am alive"
         data = connection.recv(8192)
-      #  print "data: " + data
+        print data
         if not data:
             break
         elif data[:4] == "HELO":
