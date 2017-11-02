@@ -119,8 +119,7 @@ def clientthread(connection, address):
             print reply
 
             for conn in all_chatrooms[chat]["connections"]:
-                if not conn is connection:
-                    conn.sendall(reply)
+                conn.sendall(reply)
         
         elif data[:len("DISCONNECT")] == "DISCONNECT":
             connected = False
