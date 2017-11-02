@@ -135,9 +135,10 @@ def clientthread(connection, address):
                     print client_name
                     reply = "CHAT:"+name_ref_dict[chat]+"\nCLIENT_NAME:"+client_name+"\nMESSAGE:"+client_name+" has left this chatroom.\n\n"
                     print reply
-                    for conn in chat["connections"]:
+                    print 
+                    for conn in all_chatrooms[chat]["connections"]:
                         conn.sendall(reply)
-                    chat["connections"].remove(connection)
+                    all_chatrooms[chat]["connections"].remove(connection)
             connection.close()
 
         print "starting while again"
