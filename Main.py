@@ -25,12 +25,12 @@ def clientthread(connection, address):
         if not data:
             break
         elif data[:4] == "HELO":
-            reply = str(data) + "IP:[" + str(address[0]) + ":" + str(address[1]) + "]\nPort:[" + str(PORT) + "]\nStudentID:[13320989]\n"
+            reply = str(data) + "IP:[" + str(address[0]) + ":" + str(address[1]) + "]\nPort:[" + str(PORT) + "]\nStudentID:[13320989]\n\n"
             connection.sendall(reply)
 
         elif data == "KILL_SERVICE\n":
             for chat in all_chatrooms:
-                for client_conn in chat:
+                for client_conn in chat["connections"]:
                     client_conn.close()
             print "Shutting Down"
             os._exit(1)
@@ -40,6 +40,7 @@ def clientthread(connection, address):
             chat_name = " ".join(params[0].split(" ")[1:]).strip('[]')
             ip = " ".join(params[1].split(" ")[1:]).strip('[]')
             port = " ".join(params[2].split(" ")[1:]).strip('[]')
+            client_name = " ".join(params[3].split(" ")[1:]).strip('[]\n')
             if chat_name not in name_ref_dict:
                 picked_ref = False
                 while not picked_ref:
@@ -55,12 +56,12 @@ def clientthread(connection, address):
                     "ref":name_ref_dict[chat_name]
                 }
             else:
-                all_chatrooms[chat_name]["connections"].append(connection)
-            reply = "JOINED_CHATROOM: ["+chat_name+"]\nSERVER_IP: ["+str(all_chatrooms[chat_name]["IP"])+"]\nPORT: ["+str(all_chatrooms[chat_name]["Port"])+"]\nROOM_REF: ["+str(name_ref_dict[chat_name])+"]\nJOIN_ID: ["+str(client_ref_dict[str(address[0])+str(address[1])])+"]"
+                if connection not in all_chatrooms[chat_name]["connections"]:
+                    all_chatrooms[chat_name]["connections"].append(connection)
+            reply = "JOINED_CHATROOM: ["+chat_name+"]\nSERVER_IP: ["+str(all_chatrooms[chat_name]["IP"])+"]\nPORT: ["+str(all_chatrooms[chat_name]["Port"])+"]\nROOM_REF: ["+str(name_ref_dict[chat_name])+"]\nJOIN_ID: ["+str(client_ref_dict[str(address[0])+str(address[1])])+"]\n\n"
             connection.sendall(reply)
-            print all_chatrooms
-            print ref_name_dict
-            print name_ref_dict
+            for conn in all_chatrooms[chat_name]["connections"]:
+                conn.sendall(client_name + " has joined the chat\n\n")
 
         elif data[:len("LEAVE_CHATROOM")] == "LEAVE_CHATROOM":
             params = data.split('\\n')
@@ -70,14 +71,13 @@ def clientthread(connection, address):
             chat = ref_name_dict[room_ref]
             try:
                 all_chatrooms[chat]["connections"].remove(connection)
+                for conn in all_chatrooms[chat]["connections"]:
+                    conn.sendall(client_name + " has left the chat\n\n")
             except Exception:
                 print "Already left"
 
-            reply = "LEFT_CHATROOM: ["+room_ref+"]\nJOIN_ID: ["+join_id+"]"
+            reply = "LEFT_CHATROOM: ["+room_ref+"]\nJOIN_ID: ["+join_id+"]\n\n"
             connection.sendall(reply)
-            for conn in all_chatrooms[chat]["connections"]:
-                conn.sendall(client_name + " has left the chat")
-            print all_chatrooms
         
         elif data[:len("CHAT:")] == "CHAT:":
             params = data.split('\\n')
