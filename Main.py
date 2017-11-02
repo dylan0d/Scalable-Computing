@@ -83,7 +83,6 @@ def clientthread(connection, address):
             chat = ref_name_dict[room_ref]
             print chat
             try:
-                all_chatrooms[chat]["connections"].remove(connection)
                 print "connection removed"
                 for conn in all_chatrooms[chat]["connections"]:
                     reply = "CHAT:"+name_ref_dict[chat_name]+"\nCLIENT_NAME:"+client_name+"\nMESSAGE:"+client_name+" has left this chatroom."
@@ -95,6 +94,8 @@ def clientthread(connection, address):
 
             reply = "LEFT_CHATROOM: "+room_ref+"\nJOIN_ID: "+join_id+"\n\n"
             connection.sendall(reply)
+            all_chatrooms[chat]["connections"].remove(connection)
+
         
         elif data[:len("CHAT:")] == "CHAT:":
             params = data.split('\n')
