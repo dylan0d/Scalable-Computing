@@ -63,9 +63,8 @@ def clientthread(connection, address):
             reply = "CHAT:"+name_ref_dict[chat_name]+"\nCLIENT_NAME:"+client_name+"\nMESSAGE:"+client_name+" has joined this chatroom.\n"
             print all_chatrooms
             for conn in all_chatrooms[chat_name]["connections"]:
-                if not conn == connection:
-                    print reply
-                    conn.sendall(reply)
+                print reply
+                conn.sendall(reply)
 
         elif data[:len("LEAVE_CHATROOM")] == "LEAVE_CHATROOM":
             params = data.split('\n')
