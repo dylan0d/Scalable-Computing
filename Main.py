@@ -5,6 +5,7 @@ import sys
 import os
 from thread import start_new_thread
 from random import randint
+from concurrent.futures import ThreadPoolExecutor
 
 HOST = ''   # Symbolic name, meaning all available interfaces
 PORT = int(sys.argv[1]) # Arbitrary non-privileged port
@@ -26,7 +27,7 @@ def clientthread(connection, address):
         #Receiving from client
         print "hello I am alive"
         data = connection.recv(8192)
-        print "data: "+data
+        print "data: " + data
         if not data:
             break
         elif data[:4] == "HELO":
@@ -43,7 +44,7 @@ def clientthread(connection, address):
             os._exit(1)
             break
         elif data[:len("JOIN_CHATROOM")] == "JOIN_CHATROOM":
-            params = data.split('\n')
+            params = data.split('\\n')
             chat_name = getData(params, 0)
             ip = getData(params, 1)
             port =getData(params, 2)
@@ -76,7 +77,7 @@ def clientthread(connection, address):
 
         elif data[:len("LEAVE_CHATROOM")] == "LEAVE_CHATROOM":
             print "recognised leave"
-            params = data.split('\n')
+            params = data.split('\\n')
             room_ref = getData(params, 0)
             join_id = getData(params, 1)
             client_name = getData(params, 2)
@@ -98,7 +99,7 @@ def clientthread(connection, address):
 
         
         elif data[:len("CHAT:")] == "CHAT:":
-            params = data.split('\n')
+            params = data.split('\\n')
             room_ref = getData(params, 0)
             chat = ref_name_dict[room_ref]
             join_id = getData(params, 1)
@@ -120,6 +121,7 @@ def clientthread(connection, address):
 if __name__ == "__main__":
     print 'Socket created successfully'
     #Bind socket to local host and port
+    pool = ThreadPoolExecutor(128)
     try:
         master_socket.bind((HOST, PORT))
     except socket.error as msg:
@@ -143,6 +145,5 @@ if __name__ == "__main__":
             if ref_number not in name_ref_dict.itervalues():
                 picked_ref = True
                 client_ref_dict[str(addr[0])+str(addr[1])] = ref_number
-        start_new_thread(clientthread, (conn, addr))
-
+        pool.submit(clientthread, conn, addr)
     master_socket.close()
