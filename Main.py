@@ -52,7 +52,7 @@ def clientthread(connection, address):
             print "recognised kill service"
             if len(all_chatrooms) > 0:
                 for chat in all_chatrooms:
-                    for client_conn in chat["connections"]:
+                    for client_conn in all_chatrooms[chat]["connections"]:
                         client_conn.close()
             connection.close()
             print "Shutting Down"
