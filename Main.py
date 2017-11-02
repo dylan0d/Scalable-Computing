@@ -25,7 +25,7 @@ def clientthread(connection, address):
     connected = True
     while connected:
         #Receiving from client
-       # print all_chatrooms
+        print all_chatrooms
         print "hello I am alive"
         data = connection.recv(8192)
         print "Recevied: " + data
@@ -107,6 +107,8 @@ def clientthread(connection, address):
             message = getData(params, 3)
 
             reply = "CHAT: "+room_ref+"\nCLIENT_NAME: "+client_name+"\nMESSAGE: "+message+"\n\n"
+            print reply
+
             for conn in all_chatrooms[chat]["connections"]:
                 if not conn is connection:
                     conn.sendall(reply)
