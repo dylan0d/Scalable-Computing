@@ -131,7 +131,10 @@ def clientthread(connection, address):
                 print "checking ", chat
                 if connection in all_chatrooms[chat]["connections"]:
                     print "removing from "+ chat
+                    print name_ref_dict[chat]
+                    print client_name
                     reply = "CHAT:"+name_ref_dict[chat]+"\nCLIENT_NAME:"+client_name+"\nMESSAGE:"+client_name+" has left this chatroom.\n\n"
+                    print reply
                     for conn in chat["connections"]:
                         conn.sendall(reply)
                     chat["connections"].remove(connection)
