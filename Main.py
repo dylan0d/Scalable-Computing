@@ -25,9 +25,10 @@ def clientthread(connection, address):
     connected = True
     while connected:
         #Receiving from client
+       # print all_chatrooms
         print "hello I am alive"
         data = connection.recv(8192)
-        print "data: " + data
+      #  print "data: " + data
         if not data:
             break
         elif data[:4] == "HELO":
@@ -69,7 +70,7 @@ def clientthread(connection, address):
             reply = "JOINED_CHATROOM: "+chat_name+"\nSERVER_IP: "+str(all_chatrooms[chat_name]["IP"])+"\nPORT: "+str(all_chatrooms[chat_name]["Port"])+"\nROOM_REF: "+str(name_ref_dict[chat_name])+"\nJOIN_ID: "+str(client_ref_dict[str(address[0])+str(address[1])])+"\n"
             connection.sendall(reply)
             reply = "CHAT:"+name_ref_dict[chat_name]+"\nCLIENT_NAME:"+client_name+"\nMESSAGE:"+client_name+" has joined this chatroom.\n"
-            print all_chatrooms
+      #      print all_chatrooms
             for conn in all_chatrooms[chat_name]["connections"]:
                 print reply
                 conn.sendall(reply)
@@ -82,7 +83,7 @@ def clientthread(connection, address):
             join_id = getData(params, 1)
             client_name = getData(params, 2)
             chat = ref_name_dict[room_ref]
-            print chat
+      #      print chat
             try:
                 print "connection removed"
                 for conn in all_chatrooms[chat]["connections"]:
