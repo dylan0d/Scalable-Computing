@@ -21,9 +21,9 @@ def getData(params, index):
 def clientthread(connection, address):
     #Sending message to connected client
     #infinite loop so that function do not terminate and thread do not end.
-    while True:
+    connected = True
+    while connected:
         #Receiving from client
-        print connection._closed
         print "hello I am alive"
         data = connection.recv(8192)
         print "data: "+data
@@ -43,7 +43,7 @@ def clientthread(connection, address):
             os._exit(1)
             break
         elif data[:len("JOIN_CHATROOM")] == "JOIN_CHATROOM":
-            params = data.split('\n')
+            params = data.split('\\n')
             chat_name = getData(params, 0)
             ip = getData(params, 1)
             port =getData(params, 2)
@@ -76,7 +76,7 @@ def clientthread(connection, address):
 
         elif data[:len("LEAVE_CHATROOM")] == "LEAVE_CHATROOM":
             print "recognised leave"
-            params = data.split('\n')
+            params = data.split('\\n')
             room_ref = getData(params, 0)
             join_id = getData(params, 1)
             client_name = getData(params, 2)
@@ -98,7 +98,7 @@ def clientthread(connection, address):
 
         
         elif data[:len("CHAT:")] == "CHAT:":
-            params = data.split('\n')
+            params = data.split('\\n')
             room_ref = getData(params, 0)
             chat = ref_name_dict[room_ref]
             join_id = getData(params, 1)
@@ -109,6 +109,9 @@ def clientthread(connection, address):
             for conn in all_chatrooms[chat]["connections"]:
                 if not conn is connection:
                     conn.sendall(reply)
+        
+        elif data[:len("DISCONNECT")] == "DISCONNECT":
+            connected = False
         print "starting while again"
     #came out of loop
     print "left loop unexpectedly"
