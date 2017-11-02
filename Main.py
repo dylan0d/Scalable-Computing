@@ -127,7 +127,7 @@ def clientthread(connection, address):
             connected = False
             for chat in all_chatrooms:
                 print "checking ", chat
-                if connection in chat["connections"]:
+                if connection in all_chatrooms[chat]["connections"]:
                     print "removing from "+ chat
                     reply = "CHAT:"+room_ref+"\nCLIENT_NAME:"+client_name+"\nMESSAGE:"+client_name+" has left this chatroom.\n\n"
                     for conn in chat["connections"]:
