@@ -64,7 +64,7 @@ def clientthread(connection, address):
             port =getData(params, 2)
             client_name = getData(params, 3)
             if chat_name not in name_ref_dict:
-                ref_number = next_chat_code
+                ref_number = next_chat_code()
                 name_ref_dict[chat_name] = str(ref_number)
                 ref_name_dict[str(ref_number)] = chat_name
                 all_chatrooms[chat_name] = {
