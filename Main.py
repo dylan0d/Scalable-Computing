@@ -69,7 +69,7 @@ def clientthread(connection, address):
                     all_chatrooms[chat_name]["connections"].append(connection)
             reply = "JOINED_CHATROOM: "+chat_name+"\nSERVER_IP: "+str(all_chatrooms[chat_name]["IP"])+"\nPORT: "+str(all_chatrooms[chat_name]["Port"])+"\nROOM_REF: "+str(name_ref_dict[chat_name])+"\nJOIN_ID: "+str(client_ref_dict[str(address[0])+str(address[1])])+"\n"
             connection.sendall(reply)
-            reply = "CHAT:"+name_ref_dict[chat_name]+"\nCLIENT_NAME:"+client_name+"\nMESSAGE:"+client_name+" has joined this chatroom.\n"
+            reply = "CHAT:"+name_ref_dict[chat_name]+"\nCLIENT_NAME:"+client_name+"\nMESSAGE:"+client_name+" has joined this chatroom.\n\n"
       #      print all_chatrooms
             for conn in all_chatrooms[chat_name]["connections"]:
                 print reply
@@ -87,14 +87,14 @@ def clientthread(connection, address):
             try:
                 print "connection removed"
                 for conn in all_chatrooms[chat]["connections"]:
-                    reply = "CHAT:"+name_ref_dict[chat_name]+"\nCLIENT_NAME:"+client_name+"\nMESSAGE:"+client_name+" has left this chatroom."
+                    reply = "CHAT:"+name_ref_dict[chat_name]+"\nCLIENT_NAME:"+client_name+"\nMESSAGE:"+client_name+" has left this chatroom.\n\n"
                     print reply
                     conn.sendall(reply)
                     print "sent reply"
             except Exception:
                 print "Already left"
 
-            reply = "LEFT_CHATROOM: "+room_ref+"\nJOIN_ID: "+join_id+"\n\n"
+            reply = "LEFT_CHATROOM: "+room_ref+"\nJOIN_ID: "+join_id+"\n"
             connection.sendall(reply)
             all_chatrooms[chat]["connections"].remove(connection)
 
