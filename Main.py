@@ -23,13 +23,14 @@ def clientthread(connection, address):
         if not data:
             break
         elif data[:4] == "HELO":
-            reply = str(data) + "IP:[" + str(address[0]) + ":" + str(address[1]) + "]\nPort:[" + str(PORT) + "]\nStudentID:[13320989]\n\n"
+            reply = str(data) + "IP:" + str(address[0]) + ":" + str(address[1]) + "\nPort:" + str(PORT) + "\nStudentID:13320989"
             connection.sendall(reply)
 
         elif data == "KILL_SERVICE\n":
-            for chat in all_chatrooms:
-                for client_conn in chat["connections"]:
-                    client_conn.close()
+            if len(all_chatrooms)>0:
+                for chat in all_chatrooms:
+                    for client_conn in chat["connections"]:
+                        client_conn.close()
             connection.close()
             print "Shutting Down"
             os._exit(1)
@@ -59,8 +60,9 @@ def clientthread(connection, address):
                     all_chatrooms[chat_name]["connections"].append(connection)
             reply = "JOINED_CHATROOM: "+chat_name+"\nSERVER_IP: "+str(all_chatrooms[chat_name]["IP"])+"\nPORT: "+str(all_chatrooms[chat_name]["Port"])+"\nROOM_REF: "+str(name_ref_dict[chat_name])+"\nJOIN_ID: "+str(client_ref_dict[str(address[0])+str(address[1])])+"\n\n"
             connection.sendall(reply)
+            reply = "CHAT:"+name_ref_dict[chat_name]+"\nCLIENT_NAME:"+client_name+"\nMESSAGE:"+client_name+" has joined this chatroom."
             for conn in all_chatrooms[chat_name]["connections"]:
-                conn.sendall(client_name + " has joined the chat\n\n")
+                conn.sendall(reply)
 
         elif data[:len("LEAVE_CHATROOM")] == "LEAVE_CHATROOM":
             params = data.split('\n')
@@ -71,7 +73,8 @@ def clientthread(connection, address):
             try:
                 all_chatrooms[chat]["connections"].remove(connection)
                 for conn in all_chatrooms[chat]["connections"]:
-                    conn.sendall(client_name + " has left the chat\n\n")
+                    reply = "CHAT:"+name_ref_dict[chat_name]+"\nCLIENT_NAME:"+client_name+"\nMESSAGE:"+client_name+" has left this chatroom."
+                    conn.sendall(reply)
             except Exception:
                 print "Already left"
 
