@@ -61,6 +61,7 @@ def clientthread(connection, address):
             reply = "JOINED_CHATROOM: "+chat_name+"\nSERVER_IP: "+str(all_chatrooms[chat_name]["IP"])+"\nPORT: "+str(all_chatrooms[chat_name]["Port"])+"\nROOM_REF: "+str(name_ref_dict[chat_name])+"\nJOIN_ID: "+str(client_ref_dict[str(address[0])+str(address[1])])+"\n\n"
             connection.sendall(reply)
             reply = "CHAT:"+name_ref_dict[chat_name]+"\nCLIENT_NAME:"+client_name+"\nMESSAGE:"+client_name+" has joined this chatroom."
+            print all_chatrooms
             for conn in all_chatrooms[chat_name]["connections"]:
                 if not conn == connection:
                     print reply
