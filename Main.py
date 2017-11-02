@@ -123,13 +123,16 @@ def clientthread(connection, address):
                 conn.sendall(reply)
         
         elif data[:len("DISCONNECT")] == "DISCONNECT":
+            print "recognised disconnect"
             connected = False
             for chat in all_chatrooms:
                 if connection in chat["connections"]:
+                    print "removing from "+ chat
                     reply = "CHAT:"+room_ref+"\nCLIENT_NAME:"+client_name+"\nMESSAGE:"+client_name+" has left this chatroom.\n\n"
                     for conn in chat["connections"]:
                         conn.sendall(reply)
                     chat["connections"].remove(connection)
+                    connection.close()
 
         print "starting while again"
     #came out of loop
