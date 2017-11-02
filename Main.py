@@ -65,6 +65,7 @@ def clientthread(connection, address):
             for conn in all_chatrooms[chat_name]["connections"]:
                 print reply
                 conn.sendall(reply)
+            print "finished joining"
 
         elif data[:len("LEAVE_CHATROOM")] == "LEAVE_CHATROOM":
             print "recognised leave"
