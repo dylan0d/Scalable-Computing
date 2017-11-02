@@ -43,7 +43,7 @@ def clientthread(connection, address):
             os._exit(1)
             break
         elif data[:len("JOIN_CHATROOM")] == "JOIN_CHATROOM":
-            params = data.split('\\n')
+            params = data.split('\n')
             chat_name = getData(params, 0)
             ip = getData(params, 1)
             port =getData(params, 2)
@@ -76,7 +76,7 @@ def clientthread(connection, address):
 
         elif data[:len("LEAVE_CHATROOM")] == "LEAVE_CHATROOM":
             print "recognised leave"
-            params = data.split('\\n')
+            params = data.split('\n')
             room_ref = getData(params, 0)
             join_id = getData(params, 1)
             client_name = getData(params, 2)
@@ -98,7 +98,7 @@ def clientthread(connection, address):
 
         
         elif data[:len("CHAT:")] == "CHAT:":
-            params = data.split('\\n')
+            params = data.split('\n')
             room_ref = getData(params, 0)
             chat = ref_name_dict[room_ref]
             join_id = getData(params, 1)
