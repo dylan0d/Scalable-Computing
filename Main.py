@@ -129,6 +129,8 @@ def clientthread(connection, address):
             connected = False
             params = data.split('\n')
             client_name = getData(params, 2)
+            print all_chatrooms.keys()
+            print all_chatrooms.keys().reverse()
             chats = list(all_chatrooms.keys()).reverse()
             for chat in chats:
                 print "checking ", chat
