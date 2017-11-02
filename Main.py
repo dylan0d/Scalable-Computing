@@ -104,6 +104,7 @@ def clientthread(connection, address):
                     conn.sendall(reply)
         print "starting while again"
     #came out of loop
+    print "left loop unexpectedly"
     connection.close()
 
 if __name__ == "__main__":
