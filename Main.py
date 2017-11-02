@@ -14,6 +14,10 @@ ref_name_dict = {}
 client_ref_dict = {}
 all_chatrooms = {}
 
+def getData(params, index):
+    return " ".join(params[index].split(" ")[1:]).strip('\n')
+
+
 def clientthread(connection, address):
     #Sending message to connected client
     #infinite loop so that function do not terminate and thread do not end.
@@ -40,10 +44,10 @@ def clientthread(connection, address):
             break
         elif data[:len("JOIN_CHATROOM")] == "JOIN_CHATROOM":
             params = data.split('\n')
-            chat_name = " ".join(params[0].split(" ")[1:]).strip('[]')
-            ip = " ".join(params[1].split(" ")[1:]).strip('[]')
-            port = " ".join(params[2].split(" ")[1:]).strip('[]')
-            client_name = " ".join(params[3].split(" ")[1:]).strip('[]\n')
+            chat_name = getData(params, 0)
+            ip = getData(params, 1)
+            port =getData(params, 2)
+            client_name = getData(params, 3)
             if chat_name not in name_ref_dict:
                 picked_ref = False
                 while not picked_ref:
@@ -73,9 +77,9 @@ def clientthread(connection, address):
         elif data[:len("LEAVE_CHATROOM")] == "LEAVE_CHATROOM":
             print "recognised leave"
             params = data.split('\n')
-            room_ref = " ".join(params[0].split(" ")[1:]).strip('[]')
-            join_id = " ".join(params[1].split(" ")[1:]).strip('[]')
-            client_name = " ".join(params[2].split(" ")[1:]).strip('[]\n')
+            room_ref = getData(params, 0)
+            join_id = getData(params, 1)
+            client_name = getData(params, 2)
             chat = ref_name_dict[room_ref]
             print chat
             try:
@@ -94,11 +98,11 @@ def clientthread(connection, address):
         
         elif data[:len("CHAT:")] == "CHAT:":
             params = data.split('\n')
-            room_ref = " ".join(params[0].split(" ")[1:]).strip('[]')
+            room_ref = getData(params, 0)
             chat = ref_name_dict[room_ref]
-            join_id = " ".join(params[1].split(" ")[1:]).strip('[]')
-            client_name = " ".join(params[2].split(" ")[1:]).strip('[]')
-            message = " ".join(params[3].split(" ")[1:]).strip('[]\n')
+            join_id = getData(params, 1)
+            client_name = getData(params, 2)
+            message = getData(params, 3)
 
             reply = "CHAT: "+room_ref+"\nCLIENT_NAME: "+client_name+"\nMESSAGE: "+message+"\n\n"
             for conn in all_chatrooms[chat]["connections"]:
