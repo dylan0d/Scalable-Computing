@@ -86,6 +86,8 @@ def clientthread(connection, address):
       #      print chat
             try:
                 print "connection removed"
+                reply = "LEFT_CHATROOM: "+room_ref+"\nJOIN_ID: "+join_id+"\n"
+                connection.sendall(reply)
                 for conn in all_chatrooms[chat]["connections"]:
                     reply = "CHAT:"+name_ref_dict[chat_name]+"\nCLIENT_NAME:"+client_name+"\nMESSAGE:"+client_name+" has left this chatroom.\n\n"
                     print reply
@@ -93,9 +95,6 @@ def clientthread(connection, address):
                     print "sent reply"
             except Exception:
                 print "Already left"
-
-            reply = "LEFT_CHATROOM: "+room_ref+"\nJOIN_ID: "+join_id+"\n"
-            connection.sendall(reply)
             all_chatrooms[chat]["connections"].remove(connection)
 
         
