@@ -6,7 +6,7 @@ import os
 from concurrent.futures import ThreadPoolExecutor
 
 HOST = ''   # Symbolic name, meaning all available interfaces
-PORT = int(sys.argv[1]) # Arbitrary non-privileged port
+PORT = int(sys.argv[1])
 master_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 name_ref_dict = {}
 ref_name_dict = {}
@@ -32,7 +32,7 @@ def getData(params, index):
 
 def clientthread(connection, address):
     #Sending message to connected client
-    #infinite loop so that function do not terminate and thread do not end.
+    #infinite loop, stays connected until client disconnects.
     connected = True
     while connected:
         #Receiving from client
@@ -48,19 +48,17 @@ def clientthread(connection, address):
         elif data[:len("KILL_SERVICE")] == "KILL_SERVICE":
             print "recognised kill service"
             if len(all_chatrooms) > 0:
-                for chat in all_chatrooms:
+                for chat in all_chatrooms: #disconnect all users
                     for client_conn in all_chatrooms[chat]["connections"]:
                         client_conn.close()
             connection.close()
             print "Shutting Down"
-            os._exit(1)
-            break
+            os._exit(1) #end program
+
         elif data[:len("JOIN_CHATROOM")] == "JOIN_CHATROOM":
             print "received request to join"
             params = data.split('\n')
             chat_name = getData(params, 0)
-            ip = getData(params, 1)
-            port =getData(params, 2)
             client_name = getData(params, 3)
             if chat_name not in name_ref_dict:
                 ref_number = next_chat_code()
@@ -78,9 +76,8 @@ def clientthread(connection, address):
             reply = "JOINED_CHATROOM: "+chat_name+"\nSERVER_IP: "+str(all_chatrooms[chat_name]["IP"])+"\nPORT: "+str(all_chatrooms[chat_name]["Port"])+"\nROOM_REF: "+str(name_ref_dict[chat_name])+"\nJOIN_ID: "+str(client_ref_dict[str(address[0])+str(address[1])])+"\n"
             connection.sendall(reply)
             reply = "CHAT:"+name_ref_dict[chat_name]+"\nCLIENT_NAME:"+client_name+"\nMESSAGE:"+client_name+" has joined this chatroom.\n\n"
-            for conn in all_chatrooms[chat_name]["connections"]:
-                print reply
-                conn.sendall(reply)
+            for client_conn in all_chatrooms[chat_name]["connections"]:
+                client_conn.sendall(reply)
             print "finished joining"
 
         elif data[:len("LEAVE_CHATROOM")] == "LEAVE_CHATROOM":
@@ -93,10 +90,10 @@ def clientthread(connection, address):
             try:
                 reply = "LEFT_CHATROOM: "+room_ref+"\nJOIN_ID: "+join_id+"\n"
                 connection.sendall(reply)
-                for conn in all_chatrooms[chat]["connections"]:
+                for client_conn in all_chatrooms[chat]["connections"]:
                     reply = "CHAT:"+room_ref+"\nCLIENT_NAME:"+client_name+"\nMESSAGE:"+client_name+" has left this chatroom.\n\n"
                     print reply
-                    conn.sendall(reply)
+                    client_conn.sendall(reply)
                     print "sent leave message to "+chat
             except Exception:
                 print "Already left"
@@ -114,32 +111,23 @@ def clientthread(connection, address):
             message = getData(params, 3)
 
             reply = "CHAT: "+room_ref+"\nCLIENT_NAME: "+client_name+"\nMESSAGE: "+message+"\n\n"
-            for conn in all_chatrooms[chat]["connections"]:
-                conn.sendall(reply)
+            for client_conn in all_chatrooms[chat]["connections"]:
+                client_conn.sendall(reply)
             print "sent message"
 
         elif data[:len("DISCONNECT")] == "DISCONNECT":
             print "recognised disconnect"
-            print name_ref_dict
-            print ref_name_dict
             connected = False
             params = data.split('\n')
             client_name = getData(params, 2)
-            print all_chatrooms.keys()
-            print all_chatrooms.keys().reverse()
-            print list(all_chatrooms.keys())[::-1]
             chats = list(all_chatrooms.keys())[::-1]
             for chat in chats:
                 print "checking ", chat
                 if connection in all_chatrooms[chat]["connections"]:
                     print "removing from "+ chat
-                    print name_ref_dict[chat]
-                    print client_name
                     reply = "CHAT:"+name_ref_dict[chat]+"\nCLIENT_NAME:"+client_name+"\nMESSAGE:"+client_name+" has left this chatroom.\n\n"
-                    print reply
-                    print 
-                    for conn in all_chatrooms[chat]["connections"]:
-                        conn.sendall(reply)
+                    for client_conn in all_chatrooms[chat]["connections"]:
+                        client_conn.sendall(reply)
                     all_chatrooms[chat]["connections"].remove(connection)
             connection.close()
 
