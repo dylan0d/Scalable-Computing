@@ -3,8 +3,6 @@
 import socket
 import sys
 import os
-from thread import start_new_thread
-from random import randint
 from concurrent.futures import ThreadPoolExecutor
 
 HOST = ''   # Symbolic name, meaning all available interfaces
@@ -39,7 +37,6 @@ def clientthread(connection, address):
     while connected:
         #Receiving from client
 
-        print "hello I am alive"
         data = connection.recv(8192)
         print "Recevied: " + data
         if not data:
@@ -59,6 +56,7 @@ def clientthread(connection, address):
             os._exit(1)
             break
         elif data[:len("JOIN_CHATROOM")] == "JOIN_CHATROOM":
+            print "received request to join"
             params = data.split('\n')
             chat_name = getData(params, 0)
             ip = getData(params, 1)
@@ -80,7 +78,6 @@ def clientthread(connection, address):
             reply = "JOINED_CHATROOM: "+chat_name+"\nSERVER_IP: "+str(all_chatrooms[chat_name]["IP"])+"\nPORT: "+str(all_chatrooms[chat_name]["Port"])+"\nROOM_REF: "+str(name_ref_dict[chat_name])+"\nJOIN_ID: "+str(client_ref_dict[str(address[0])+str(address[1])])+"\n"
             connection.sendall(reply)
             reply = "CHAT:"+name_ref_dict[chat_name]+"\nCLIENT_NAME:"+client_name+"\nMESSAGE:"+client_name+" has joined this chatroom.\n\n"
-      #      print all_chatrooms
             for conn in all_chatrooms[chat_name]["connections"]:
                 print reply
                 conn.sendall(reply)
@@ -93,19 +90,19 @@ def clientthread(connection, address):
             join_id = getData(params, 1)
             client_name = getData(params, 2)
             chat = ref_name_dict[room_ref]
-      #      print chat
             try:
-                print "connection removed"
                 reply = "LEFT_CHATROOM: "+room_ref+"\nJOIN_ID: "+join_id+"\n"
                 connection.sendall(reply)
                 for conn in all_chatrooms[chat]["connections"]:
                     reply = "CHAT:"+room_ref+"\nCLIENT_NAME:"+client_name+"\nMESSAGE:"+client_name+" has left this chatroom.\n\n"
                     print reply
                     conn.sendall(reply)
-                    print "sent reply"
+                    print "sent leave message to "+chat
             except Exception:
                 print "Already left"
             all_chatrooms[chat]["connections"].remove(connection)
+            print "left chatroom "+chat
+
 
         
         elif data[:len("CHAT:")] == "CHAT:":
@@ -117,11 +114,10 @@ def clientthread(connection, address):
             message = getData(params, 3)
 
             reply = "CHAT: "+room_ref+"\nCLIENT_NAME: "+client_name+"\nMESSAGE: "+message+"\n\n"
-            print reply
-
             for conn in all_chatrooms[chat]["connections"]:
                 conn.sendall(reply)
-        
+            print "sent message"
+
         elif data[:len("DISCONNECT")] == "DISCONNECT":
             print "recognised disconnect"
             print name_ref_dict
@@ -147,9 +143,8 @@ def clientthread(connection, address):
                     all_chatrooms[chat]["connections"].remove(connection)
             connection.close()
 
-        print "starting while again"
     #came out of loop
-    print "left loop unexpectedly"
+    print "closing connection"
     connection.close()
 
 if __name__ == "__main__":
