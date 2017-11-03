@@ -45,7 +45,7 @@ def clientthread(connection, address):
         if not data:
             break
         elif data[:4] == "HELO":
-            reply = str(data) + "IP:" + str(address[0]) + ":" + str(address[1]) + "\nPort:" + str(PORT) + "\nStudentID:13320989"
+            reply = str(data) + "IP:10.62.0.52\nPort:" + str(PORT) + "\nStudentID:13320989"
             connection.sendall(reply)
 
         elif data[:len("KILL_SERVICE")] == "KILL_SERVICE":
