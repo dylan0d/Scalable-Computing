@@ -36,7 +36,8 @@ def clientthread(connection, address):
     connected = True
     while connected:
         #Receiving from client
-
+        #clients are identified by their connections
+        # chatrooms are dictionaries where key is chatroom id and value is list of connections (clients) in chatroom
         data = connection.recv(8192)
         print "Recevied: " + data
         if not data:
@@ -99,8 +100,6 @@ def clientthread(connection, address):
                 print "Already left"
             all_chatrooms[chat]["connections"].remove(connection)
             print "left chatroom "+chat
-
-
         
         elif data[:len("CHAT:")] == "CHAT:":
             params = data.split('\n')
